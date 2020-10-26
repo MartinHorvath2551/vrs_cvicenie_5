@@ -209,7 +209,14 @@ void EXTI3_IRQHandler(void)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_3);
     /* USER CODE BEGIN LL_EXTI_LINE_3 */
-    
+	if(checkButtonState(GPIOA,
+						LL_GPIO_PIN_3,
+						0,
+						100,
+						90))
+	{
+		switch_state ^= 1;
+	}
     /* USER CODE END LL_EXTI_LINE_3 */
   }
   /* USER CODE BEGIN EXTI3_IRQn 1 */

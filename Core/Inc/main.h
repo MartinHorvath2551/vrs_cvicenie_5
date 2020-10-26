@@ -89,7 +89,7 @@ void Error_Handler(void);
                                                                  0 bit  for subpriority */
 #endif
 /* USER CODE BEGIN Private defines */
-
+uint8_t switch_state;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

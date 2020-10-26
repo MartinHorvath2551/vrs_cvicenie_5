@@ -34,6 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+uint8_t checkButtonState(GPIO_TypeDef* PORT, uint8_t PIN, uint8_t edge, uint8_t samples_window, uint8_t samples_required);
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -44,7 +45,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -102,6 +102,18 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  // Modify the code below so it sets/resets used output pin connected to the LED
+	  if(switch_state)
+	  {
+		  LL_GPIO_SetOutputPin(GPIOB,LL_GPIO_PIN_3);
+		  for(uint16_t i=0; i<0xFF00; i++){}
+		  LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_3);
+		  for(uint16_t i=0; i<0xFF00; i++){}
+	  }
+	  else
+	  {
+		  LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_3);
+	  }
 
     /* USER CODE BEGIN 3 */
   }
@@ -143,7 +155,70 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+uint8_t checkButtonState(GPIO_TypeDef* PORT, uint8_t PIN, uint8_t edge, uint8_t samples_window, uint8_t samples_required)
+{
+	  //type your code for "checkButtonState" implementation here:
 
+	uint8_t button_state = 0;
+
+	if(edge == 0)
+	{
+		//zistit "samples_window" krat za sebou ci je iny stav od "edge" ak "samples_required" krat je opacny stav, tak retunuj 1 inak 0;
+
+		for(int i=0; i<samples_window ;i++)
+		{
+			if(LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_3))
+			{
+				button_state++;
+			}
+			else
+			{
+				button_state=0;
+			}
+
+		}
+
+		if(button_state>=samples_required)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+
+
+	}
+	else if(edge == 1)
+	{
+
+		for(int i=0;i<samples_window;i++)
+		{
+			if(!LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_3))
+			{
+				button_state++;
+			}
+			else
+			{
+				button_state=0;
+			}
+
+		}
+
+		if(button_state>=samples_required)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+
+
+	}
+
+	return 0;
+}
 /* USER CODE END 4 */
 
 /**
